@@ -1,0 +1,5 @@
+<label class="image-upload-container">
+    <span>Upload a Paystub</span>
+    <span>{{ selectedFile ? fileName : "or drag and drop file here" }}</span>
+    <input #imageInput type="file" accept="image/*" capture (change)="processFile(imageInput)">
+</label>
