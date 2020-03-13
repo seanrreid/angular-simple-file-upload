@@ -1,5 +1,6 @@
 <label class="image-upload-container">
-    <span>Upload a Paystub</span>
+    <span>Upload a Paystub</span><br/>
     <span>{{ selectedFile ? fileName : "or drag and drop file here" }}</span>
     <input #imageInput type="file" accept="image/*" capture (change)="processFile(imageInput)">
 </label>
+<progress max="100" value={{progress}}></progress>
