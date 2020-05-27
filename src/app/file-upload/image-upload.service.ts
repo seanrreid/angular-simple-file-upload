@@ -27,7 +27,7 @@ export class ImageUploadService {
   percentDone: number;
   uploadSuccess: boolean;
 
-  private getEventMessage(event: HttpEvent<any>, fileUpload) {
+  private getEventMessage(event: HttpEvent<any>, fileUpload): any {
     switch (event.type) {
       case HttpEventType.UploadProgress:
         return this.fileUploadProgress(event);
@@ -38,7 +38,7 @@ export class ImageUploadService {
     }
   }
 
-  private fileUploadProgress(event) {
+  private fileUploadProgress(event): { status: string; percent: number } {
     const percentDone = Math.round((100 * event.loaded) / event.total);
     return { status: "progress", percent: percentDone };
   }
@@ -47,7 +47,7 @@ export class ImageUploadService {
     return event.body;
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse): any {
     if (error.error instanceof ErrorEvent) {
       console.error("ERROR:", error.error.message);
     } else {
@@ -63,8 +63,6 @@ export class ImageUploadService {
       DocumentType: "paystub",
       Pages: [{ Data: image, Extension: type }],
     };
-
-    console.log("uploading a file...", fileUpload);
 
     const url = `https://torchcodelab.free.beeceptor.com`;
 
@@ -93,21 +91,5 @@ export class ImageUploadService {
         return throwError(error);
       })
     );
-
-    // this.http
-    //   .post(url, docUpload, {
-    //     reportProgress: true,
-    //     observe: "events",
-    //   })
-    //   .subscribe((event) => {
-    //     if (event.type === HttpEventType.UploadProgress) {
-    //       this.percentDone = Math.round((100 * event.loaded) / event.total);
-    //       return { status: "pre-process" };
-    //     } else if (event instanceof HttpResponse) {
-    //       this.uploadSuccess = true;
-    //       console.log("event is an instance of a response", event.status);
-    //       return event.status;
-    //     }
-    //   });
   }
 }
