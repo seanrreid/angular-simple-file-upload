@@ -12,6 +12,10 @@
         <p>{{ selectedFile && "Uploading File: " + fileName }}</p>
         <p>{{percentDone}}% Uploaded</p>
     </div>
+    <div [ngStyle]="selectedFile && {'display' : 'block'} || {'display' : 'none'}">
+        <canvas #canvas></canvas>
+        <button (click)="rotateImage()">Rotate Image</button>
+    </div>
     <p *ngIf="!fileExists && !isLoading">{{ selectedFile ? "Submitted File: " + fileName : "No File Loaded" }}</p>
     <div *ngIf="fileExists" class="response-message alert alert-info">
         <h3>Paystub Uploaded</h3>
@@ -25,7 +29,7 @@
     </div>
     <div *ngIf="uploadError" class="response-message alert alert-danger">
         <h3>
-            We were unable to upload your file. Please try again. 
+            We were unable to upload your file. Please try again.
         </h3>
         <p><strong>An error has occurred while uploading your file. Please, try again. If the problem persists, contact your lender.</strong></p>
     </div>
