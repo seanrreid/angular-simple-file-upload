@@ -1,36 +1,48 @@
-<h2 *ngIf="!fileExists">Upload your most recent paystub to verify employment and income. <em>(Optional)</em></h2>
+<h2 *ngIf="!fileExists">
+    Upload your most recent paystub to verify employment and income.
+    <em>(Optional)</em>
+</h2>
 <div class="wrapper--button">
-    <div class="image-upload-container"  *ngIf="!isLoading">
+    <div class="image-upload-container" *ngIf="!isLoading">
         <div id="imageUploadBtn" class="btn blue-outline-btn">
             <span class="button--inner">
                 Upload Paystub
             </span>
-            <input #imageInput type="file" accept="image/*" (change)="processFile(imageInput)">
+            <input #imageInput type="file" accept="image/*" (change)="generatePreview(imageInput)" />
         </div>
     </div>
     <div *ngIf="isLoading">
-        <p>{{ selectedFile && "Uploading File: " + fileName }}</p>
-        <p>{{percentDone}}% Uploaded</p>
+        <p>{{ percentDone }}% Uploaded</p>
     </div>
-    <div [ngStyle]="selectedFile && {'display' : 'block'} || {'display' : 'none'}">
-        <canvas #canvas></canvas>
+    <div [ngStyle]="(selectedFile && { display: 'block' }) || { display: 'none' }">
         <button (click)="rotateImage()">Rotate Image</button>
+        <button (click)="uploadFile()">Submit File</button>
+        <div style="display: block; width: 100%;">
+            <p>{{ selectedFile && "Preview File: " + fileName }}</p>
+            <canvas #canvas [ngStyle]="{ 'background-color': 'silver' }"></canvas>
+        </div>
     </div>
-    <p *ngIf="!fileExists && !isLoading">{{ selectedFile ? "Submitted File: " + fileName : "No File Loaded" }}</p>
     <div *ngIf="fileExists" class="response-message alert alert-info">
         <h3>Paystub Uploaded</h3>
         <p>A paystub has already been uploaded for this account.</p>
     </div>
-    <div *ngIf="fileUploaded" class="response-message alert alert-success" >
+    <div *ngIf="fileUploaded" class="response-message alert alert-success">
         <h3>
             Paystub Uploaded
         </h3>
-        <p>Have you connected the bank account(s) where your paycheck is deposited? If not, be sure to do so by clicking the <strong>"Add Another Account"</strong> button above. ⬆️</p>
+        <p>
+            Have you connected the bank account(s) where your paycheck is deposited?
+            If not, be sure to do so by clicking the
+            <strong>"Add Another Account"</strong> button above. ⬆️
+        </p>
     </div>
     <div *ngIf="uploadError" class="response-message alert alert-danger">
         <h3>
             We were unable to upload your file. Please try again.
         </h3>
-        <p><strong>An error has occurred while uploading your file. Please, try again. If the problem persists, contact your lender.</strong></p>
+        <p>
+            <strong>An error has occurred while uploading your file. Please, try again. If
+                the problem persists, contact your lender.</strong>
+        </p>
     </div>
 </div>

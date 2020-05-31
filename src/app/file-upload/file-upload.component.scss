@@ -1,50 +1,55 @@
+.image-upload-container {
+    position: relative;
+    width: 100%
+}
+
 #imageUploadBtn {
-    margin-top: -2px;
-    margin-bottom: 2px;
-    max-height: 60px;
-    max-width: 400px;
-    padding: 16px;
-    text-align: left;
+  margin-top: -2px;
+  margin-bottom: 2px;
+  max-height: 60px;
+  max-width: 400px;
+  padding: 16px;
+  text-align: left;
+  width: 100%;
+
+  input {
+    cursor: pointer;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  .button--inner {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  svg {
+    height: auto;
     width: 100%;
 
-    input {
-        cursor: pointer;
-        opacity: 0;
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: 100%;
-        width: 100%;
+    g,
+    path {
+      stroke: #3B96FF;
     }
+  }
 
-    .button--inner {
-        display: flex;
-        justify-content: space-between;
+  &:disabled {
+    &:hover {
+      border: none;
+      box-shadow: none;
+      color: #D5D6D7;
+      outline: none;
     }
 
     svg {
-        height: auto;
-        width: 100%;
-
-        path,
-        g {
-            stroke: #3B96FF;
-        }
+      g,
+      path {
+        stroke: #D5D6D7;
+      }
     }
-
-    &:disabled {
-        &:hover {
-            border: none;
-            box-shadow: none;
-            color: #D5D6D7;
-            outline: none;
-        }
-
-        svg {
-            path,
-            g {
-                stroke: #D5D6D7;
-            }
-        }
-    }
+  }
 }

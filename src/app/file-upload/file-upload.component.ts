@@ -24,8 +24,9 @@ export class FileUploadComponent {
     uploadError: boolean = false;
     imgSrc: string = ""
     fileName: string = "";
+    fileType: string = ""
     base64File: string[] = [];
-    percentDone: number;
+    percentDone: number = 0;
 
     constructor(
         private readonly imageUploadService: ImageUploadService,
@@ -36,85 +37,82 @@ export class FileUploadComponent {
     ngAfterViewInit() {
         this.canvasEl = this.canvas.nativeElement;
         this.ctx = this.canvasEl.getContext('2d');
-        console.log("ng view init", this.canvas);
     }
 
     renderImage(): void {
         const _this = this;
-        this.canvasEl = this.canvas.nativeElement;
-        this.ctx = this.canvasEl.getContext('2d');
-        const img = new Image();
-        img.onload = function () {
-            _this.canvasEl.width = img.width;
-            _this.canvasEl.height = img.height;
-            _this.ctx.drawImage(img, 0, 0);
+        const image = new Image();
+        image.src = this.imgSrc;
+        image.onload = function () {
+            _this.canvasEl.width = image.width;
+            _this.canvasEl.height = image.height;
+            _this.ctx.drawImage(image, 0, 0);
         }
-        img.src = this.imgSrc;
     }
 
     rotateImage(): void {
-        const _this = this;
-        console.log("rotating image??", this.imgSrc);
-        this.canvasEl = this.canvas.nativeElement;
-        this.ctx = this.canvasEl.getContext('2d');
-        const img = new Image();
-        img.onload = function () {
-            _this.canvasEl.width = img.height;
-            _this.canvasEl.height = img.width;
-            _this.ctx.rotate(90 * Math.PI / 180);
-            _this.ctx.drawImage(img, 0, 0);
+        const image = new Image();
+        image.src = this.imgSrc;
+
+        image.onload = (): void => {
+            // We're rotating the images, so height and width flop
+            this.canvasEl.width = image.height;
+            this.canvasEl.height = image.width;
+            this.ctx.rotate(Math.PI / 2);
+            this.ctx.translate(0, -this.canvasEl.width);
+            this.ctx.drawImage(image, 0, 0);
+            this.imgSrc = this.canvasEl.toDataURL(this.fileType, 100);
+            this.base64File = this.imgSrc.split(",");
         }
-        img.src = this.imgSrc;
     }
 
-    processFile(imageInput: IFileInput): void {
+    generatePreview(imageInput: IFileInput): void {
+        const file: File = imageInput.files[0];
+        const reader = new FileReader();
+
+        reader.readAsDataURL(file);
+        reader.onload = (): void => {
+            if (typeof reader.result === "string") {
+                this.selectedFile = true;
+                this.isDisabled = false;
+                this.imgSrc = reader.result;
+                this.base64File = reader.result.split(",");
+                this.fileName = file.name;
+                this.fileType = file.type;
+                this.renderImage();
+            }
+        }
+    }
+
+    uploadFile(): void {
         try {
-            const file: File = imageInput.files[0];
-            const reader = new FileReader();
+            console.log("the file:", this.imgSrc);
+            const fileExtension: string = this.fileName.split(".").pop();
+            const file: string = this.base64File[1];
 
-            this.fileName = file.name;
-
-            reader.readAsDataURL(file);
-            reader.onload = (): void => {
-                if (typeof reader.result === "string") {
-                    this.selectedFile = true;
-                    this.isDisabled = false;
-                    this.isLoading = true;
-                    this.base64File = reader.result.split(",");
-                    this.imgSrc = reader.result;
-                    this.renderImage();
-                }
-                const fileExtension = file.name.split(".").pop();
-
-
-
-
-                //const url = `https://torchcodelab.free.beeceptor.com`;
-
-                // this.imageUploadService
-                //   .uploadFile(this.base64File[1], fileExtension)
-                //   .subscribe(
-                //     (res: { status: string; percent?: number; message?: string }) => {
-                //       console.log("upload file status ", res.status, res.percent);
-                //       if (res.status === "progress") {
-                //         this.isLoading = true;
-                //         this.percentDone = res.percent;
-                //       }
-                //       if (res.status === undefined || res.status === "pre_process") {
-                //         this.fileUploaded = true;
-                //         this.isLoading = false;
-                //         this.uploadError = false;
-                //       }
-                //       return status;
-                //     },
-                //     (error: Error) => {
-                //       this.isDisabled = false;
-                //       this.isLoading = false;
-                //       this.uploadError = true;
-                //       return error;
-                //     }
-                //   );
-            };
+            this.imageUploadService
+                .uploadFile(file, fileExtension)
+                .subscribe(
+                    (res: { status: string; percent?: number; message?: string }) => {
+                        console.log("upload file status ", res.status, res.percent);
+                        if (res.status === "progress") {
+                            this.isLoading = true;
+                            this.percentDone = res.percent;
+                        }
+                        if (res.status === undefined || res.status === "pre_process") {
+                            this.fileUploaded = true;
+                            this.isLoading = false;
+                            this.uploadError = false;
+                        }
+                        return status;
+                    },
+                    (error: Error) => {
+                        this.isDisabled = false;
+                        this.isLoading = false;
+                        this.uploadError = true;
+                        return error;
+                    }
+                );
         } catch (error) {
             this.uploadError = true;
         }
